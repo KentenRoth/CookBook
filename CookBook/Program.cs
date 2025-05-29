@@ -1,6 +1,30 @@
+using CookBook.Data;
+using CookBook.Models;
+using CookBook.Validators;
+using FluentValidation;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 6;
+}).AddEntityFrameworkStores<ApplicationDBContext>();
+
 builder.Services.AddControllers();
+
+builder.Services.AddValidatorsFromAssemblyContaining<AppUserValidator>();
+
 
 var app = builder.Build();
 
