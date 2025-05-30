@@ -25,7 +25,6 @@ builder.Services.AddControllers();
 
 builder.Services.AddValidatorsFromAssemblyContaining<AppUserValidator>();
 
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
