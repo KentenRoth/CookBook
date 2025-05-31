@@ -1,6 +1,6 @@
 using CookBook.Data;
 using CookBook.Models;
-using CookBook.Validators;
+using CookBook.Validators.Account;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +23,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 
 builder.Services.AddControllers();
 
-builder.Services.AddValidatorsFromAssemblyContaining<AppUserValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterAccountRequestDtoValidator>();
 
 var app = builder.Build();
 
