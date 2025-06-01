@@ -13,6 +13,10 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
     }
     
     public DbSet<AppUser> User { get; set; }
+    public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<IngredientGroup> IngredientGroups { get; set; }
+    public DbSet<Ingredient> Ingredients { get; set; }
+    public DbSet<Tag> Tags { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
