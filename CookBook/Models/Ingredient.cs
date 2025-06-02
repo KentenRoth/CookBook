@@ -7,5 +7,5 @@ public class Ingredient
     public string Amount { get; set; } = string.Empty;
     public int IngredientGroupId { get; set; }
     
-    public IngredientGroup IngredientGroup { get; set; } = new IngredientGroup();
+    public IngredientGroup IngredientGroup { get; set; } = null!;
 }

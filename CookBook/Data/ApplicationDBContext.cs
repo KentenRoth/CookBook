@@ -7,6 +7,7 @@ namespace CookBook.Data;
 
 public class ApplicationDBContext : IdentityDbContext<AppUser>
 {
+    
     public ApplicationDBContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
     {
         
@@ -18,9 +19,29 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<Tag> Tags { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(builder);
+        base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<Recipe>()
+            .HasOne(r => r.User)
+            .WithMany(u => u.Recipes)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<IngredientGroup>()
+            .HasOne(ig => ig.Recipe)
+            .WithMany(r => r.IngredientGroups)
+            .HasForeignKey(ig => ig.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Ingredient>()
+            .HasOne(i => i.IngredientGroup)
+            .WithMany(ig => ig.Ingredients)
+            .HasForeignKey(i => i.IngredientGroupId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        
         List<IdentityRole> roles = new List<IdentityRole>
         {
             new IdentityRole
@@ -42,6 +63,6 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
                 NormalizedName = "PENDING"
             }
         };
-        builder.Entity<IdentityRole>().HasData(roles);
+        modelBuilder.Entity<IdentityRole>().HasData(roles);
     }
 }

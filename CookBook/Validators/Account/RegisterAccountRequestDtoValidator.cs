@@ -9,8 +9,10 @@ public class RegisterAccountRequestDtoValidator : AbstractValidator<RegisterAcco
 {
     private readonly ApplicationDBContext _dbContext;
 
-    public RegisterAccountRequestDtoValidator()
+    public RegisterAccountRequestDtoValidator(ApplicationDBContext dbContext)
     {
+        _dbContext = dbContext;
+        
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required.")
             .MaximumLength(50).WithMessage("Name is required and cannot exceed 50 characters.")
