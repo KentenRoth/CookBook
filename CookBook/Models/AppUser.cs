@@ -10,4 +10,5 @@ public class AppUser : IdentityUser
     public string Name { get; set; } = string.Empty;
     
     public ICollection<Recipe> Recipes { get; set; } = new List<Recipe>();
+    public ICollection<RefreshTokens> RefreshTokens { get; set; } = new List<RefreshTokens>();
 }

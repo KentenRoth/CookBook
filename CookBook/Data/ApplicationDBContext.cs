@@ -18,6 +18,7 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
     public DbSet<IngredientGroup> IngredientGroups { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<Tag> Tags { get; set; }
+    public DbSet<RefreshTokens> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,6 +40,12 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
             .HasOne(i => i.IngredientGroup)
             .WithMany(ig => ig.Ingredients)
             .HasForeignKey(i => i.IngredientGroupId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<RefreshTokens>()
+            .HasOne(r => r.User)
+            .WithMany(u => u.RefreshTokens)
+            .HasForeignKey(r => r.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         
         
