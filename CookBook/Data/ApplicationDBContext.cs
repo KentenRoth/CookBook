@@ -19,6 +19,7 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<RefreshTokens> RefreshTokens { get; set; }
+    public DbSet<UserSettings> UserSettings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

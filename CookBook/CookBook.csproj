@@ -24,13 +24,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
       <Folder Include="Extensions\" />
-      <Folder Include="Helpers\" />
-      <Folder Include="Interfaces\" />
       <Folder Include="Mappers\" />
       <Folder Include="Repositories\" />
-      <Folder Include="Services\" />
     </ItemGroup>
 
 </Project>
