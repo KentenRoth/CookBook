@@ -48,6 +48,12 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
             .HasForeignKey(r => r.UserId)
             .OnDelete(DeleteBehavior.Cascade);
         
+        modelBuilder.Entity<AppUser>()
+            .HasOne(a => a.UserSettings)
+            .WithOne(b => b.User)
+            .HasForeignKey<UserSettings>(b => b.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
         
         List<IdentityRole> roles = new List<IdentityRole>
         {

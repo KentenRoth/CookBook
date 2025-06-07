@@ -215,6 +215,30 @@ namespace CookBook.Migrations
                     b.ToTable("Tags");
                 });
 
+            modelBuilder.Entity("CookBook.Models.UserSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ColorMode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserSettings");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -427,6 +451,17 @@ namespace CookBook.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CookBook.Models.UserSettings", b =>
+                {
+                    b.HasOne("CookBook.Models.AppUser", "User")
+                        .WithOne("UserSettings")
+                        .HasForeignKey("CookBook.Models.UserSettings", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -498,6 +533,8 @@ namespace CookBook.Migrations
                     b.Navigation("Recipes");
 
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("UserSettings");
                 });
 
             modelBuilder.Entity("CookBook.Models.IngredientGroup", b =>
