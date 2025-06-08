@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CookBook.Models;
 
 public class IngredientGroup
 {
     public int Id { get; set; }
+    
+    [MaxLength(100)]
     public string Name { get; set; } = string.Empty;
     public int RecipeId { get; set; }
     
