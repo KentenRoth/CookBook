@@ -13,11 +13,13 @@ public class AccountService : IAccountService
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly ApplicationDBContext _context;
+    private readonly ITokenService _tokenService;
     
-    public AccountService(UserManager<AppUser> userManager, ApplicationDBContext context)
+    public AccountService(UserManager<AppUser> userManager, ApplicationDBContext context, ITokenService tokenService)
     {
         _userManager = userManager;
         _context = context;
+        _tokenService = tokenService;
     }
     
     public async Task<ServiceResponseDto<RegisterAccountResponseDto>> Register(
@@ -59,10 +61,12 @@ public class AccountService : IAccountService
                 var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
                 return ServiceResponseHelper.CreateErrorResponse<RegisterAccountResponseDto>($"Role assignment failed: {errors}");
             }
+            
+            var accessToken = await _tokenService.CreateToken(appUser);
 
             var registerAccountResponse = new RegisterAccountResponseDto
             {
-                AccessToken = "Access Token",
+                AccessToken = accessToken
             };
             
             return ServiceResponseHelper.CreateSuccessResponse(registerAccountResponse, "Registration successful");

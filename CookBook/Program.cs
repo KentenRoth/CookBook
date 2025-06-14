@@ -25,6 +25,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterAccountRequestDtoValidator>();
