@@ -59,4 +59,29 @@ public class TokenService : ITokenService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+    
+    public async Task<string> CreateRefreshToken(AppUser user, string ipAddress)
+    {
+        var refreshToken = Guid.NewGuid().ToString();
+        var now = DateTime.UtcNow;
+        var expiryDate = DateTime.UtcNow.AddMonths(3);
+
+        var refreshTokenEntity = new RefreshTokens
+        {
+            UserId = user.Id,
+            Token = refreshToken,
+            CreatedAt = now,
+            CreatedByIp = ipAddress,
+            ExpiresAt = expiryDate,
+            IsRevoked = false,
+            User = user
+        };
+
+        _context.RefreshTokens.Add(refreshTokenEntity);
+        await _context.SaveChangesAsync();
+
+        return refreshToken;
+    }
+    
+    
 }
