@@ -7,5 +7,5 @@ namespace CookBook.Interfaces;
 public interface IAccountService
 {
     Task<ServiceResponseDto<RegisterAccountResponseDto>> Register(RegisterAccountRequestDto registerDto,
-        HttpResponse response);
+        HttpResponse response, string ipAddress);
 }

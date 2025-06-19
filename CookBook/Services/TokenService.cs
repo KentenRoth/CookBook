@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Azure;
 using CookBook.Data;
 using CookBook.Interfaces;
 using CookBook.Models;
@@ -82,6 +83,16 @@ public class TokenService : ITokenService
 
         return refreshToken;
     }
-    
-    
+
+    public void SetRefreshTokenCookie(HttpResponse response, string refreshToken)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddMonths(3)
+        };
+        response.Cookies.Append("RefreshToken", refreshToken, cookieOptions);
+    }
 }

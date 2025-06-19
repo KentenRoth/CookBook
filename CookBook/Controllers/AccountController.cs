@@ -20,7 +20,9 @@ public class AccountController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterAccountRequestDto registerDto)
     {
-        var response = await _accountService.Register(registerDto, Response);
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        
+        var response = await _accountService.Register(registerDto, Response, ipAddress);
         
         if (!response.Success)
         {

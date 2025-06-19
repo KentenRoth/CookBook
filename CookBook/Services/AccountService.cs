@@ -1,3 +1,4 @@
+using System.Net;
 using CookBook.Data;
 using CookBook.DTOs;
 using CookBook.DTOs.Account.Request;
@@ -23,8 +24,9 @@ public class AccountService : IAccountService
     }
     
     public async Task<ServiceResponseDto<RegisterAccountResponseDto>> Register(
-        RegisterAccountRequestDto registerAccountRequestDto, HttpResponse response)
+        RegisterAccountRequestDto registerAccountRequestDto, HttpResponse response, string ipAddress)
     {
+
         var transaction = await _context.Database.BeginTransactionAsync();
 
         try
@@ -63,6 +65,8 @@ public class AccountService : IAccountService
             }
             
             var accessToken = await _tokenService.CreateToken(appUser);
+            var refreshToken = await _tokenService.CreateRefreshToken(appUser, ipAddress);
+            _tokenService.SetRefreshTokenCookie(response, refreshToken);
 
             var registerAccountResponse = new RegisterAccountResponseDto
             {
