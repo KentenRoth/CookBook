@@ -6,6 +6,7 @@ using CookBook.Data;
 using CookBook.Interfaces;
 using CookBook.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CookBook.Services;
@@ -94,5 +95,18 @@ public class TokenService : ITokenService
             Expires = DateTime.UtcNow.AddMonths(3)
         };
         response.Cookies.Append("RefreshToken", refreshToken, cookieOptions);
+    }
+    
+    public async Task ValidateRefreshToken(string refreshToken)
+    {
+        var tokenEntity = await _context.RefreshTokens
+            .FirstOrDefaultAsync(t => t.Token == refreshToken);
+
+        if (tokenEntity != null)
+        {
+            tokenEntity.IsRevoked = true;
+            _context.RefreshTokens.Update(tokenEntity);
+            await _context.SaveChangesAsync();
+        }
     }
 }
