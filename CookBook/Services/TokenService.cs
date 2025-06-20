@@ -102,11 +102,9 @@ public class TokenService : ITokenService
         var tokenEntity = await _context.RefreshTokens
             .FirstOrDefaultAsync(t => t.Token == refreshToken);
 
-        if (tokenEntity != null)
+        if (tokenEntity == null || tokenEntity.IsRevoked || tokenEntity.ExpiresAt < DateTime.UtcNow)
         {
-            tokenEntity.IsRevoked = true;
-            _context.RefreshTokens.Update(tokenEntity);
-            await _context.SaveChangesAsync();
+            throw new SecurityTokenException("Invalid or expired refresh token");
         }
     }
 }
