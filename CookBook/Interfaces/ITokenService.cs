@@ -9,4 +9,5 @@ public interface ITokenService
     void SetRefreshTokenCookie(HttpResponse response, string refreshToken);
     Task ValidateRefreshToken(string refreshToken, string userId);
     Task RevokeRefreshToken(string refreshToken, string ipAddress);
+    Task RevokeAllRefreshTokens(string userId, string ipAddress);
 }

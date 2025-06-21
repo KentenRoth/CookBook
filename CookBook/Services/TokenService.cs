@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using Azure;
@@ -121,5 +122,21 @@ public class TokenService : ITokenService
             _context.RefreshTokens.Update(tokenEntity);
             await _context.SaveChangesAsync();
         }
+    }
+    
+    public async Task RevokeAllRefreshTokens(string userId, string ipAddress)
+    {
+        var tokens = await _context.RefreshTokens
+            .Where(t => t.UserId == userId && !t.IsRevoked)
+            .ToListAsync();
+
+        foreach (var token in tokens)
+        {
+            token.IsRevoked = true;
+            token.RevokedAt = DateTime.UtcNow;
+            token.RevokedByIp = ipAddress;
+        }
+        
+        await _context.SaveChangesAsync();
     }
 }
