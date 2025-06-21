@@ -108,7 +108,7 @@ public class TokenService : ITokenService
         }
     }
     
-    public async Task RevokeRefreshToken(string refreshToken)
+    public async Task RevokeRefreshToken(string refreshToken, string ipAddress)
     {
         var tokenEntity = await _context.RefreshTokens
             .FirstOrDefaultAsync(t => t.Token == refreshToken);
@@ -116,6 +116,8 @@ public class TokenService : ITokenService
         if (tokenEntity != null)
         {
             tokenEntity.IsRevoked = true;
+            tokenEntity.RevokedAt = DateTime.UtcNow;
+            tokenEntity.RevokedByIp = ipAddress;
             _context.RefreshTokens.Update(tokenEntity);
             await _context.SaveChangesAsync();
         }
