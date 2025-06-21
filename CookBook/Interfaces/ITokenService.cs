@@ -10,4 +10,5 @@ public interface ITokenService
     Task ValidateRefreshToken(string refreshToken, string userId);
     Task RevokeRefreshToken(string refreshToken, string ipAddress);
     Task RevokeAllRefreshTokens(string userId, string ipAddress);
+    Task<AppUser> GetUserFromRefreshToken(string refreshToken);
 }

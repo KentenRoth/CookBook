@@ -139,4 +139,24 @@ public class TokenService : ITokenService
         
         await _context.SaveChangesAsync();
     }
+    
+    public async Task<AppUser> GetUserFromRefreshToken(string refreshToken)
+    {
+        var tokenEntity = await _context.RefreshTokens
+            .Include(t => t.User)
+            .FirstOrDefaultAsync(t => t.Token == refreshToken && !t.IsRevoked && t.ExpiresAt > DateTime.UtcNow);
+        
+        if (tokenEntity == null)
+        {
+            throw new SecurityTokenException("Invalid or expired refresh token");
+        }
+
+        var user = await _userManager.FindByIdAsync(tokenEntity.UserId);
+    
+        if (user == null)
+        {
+            throw new SecurityTokenException("User not found");
+        }
+        return user;
+    }
 }
