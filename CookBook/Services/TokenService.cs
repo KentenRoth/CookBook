@@ -97,10 +97,10 @@ public class TokenService : ITokenService
         response.Cookies.Append("RefreshToken", refreshToken, cookieOptions);
     }
     
-    public async Task ValidateRefreshToken(string refreshToken)
+    public async Task ValidateRefreshToken(string refreshToken, string userId)
     {
         var tokenEntity = await _context.RefreshTokens
-            .FirstOrDefaultAsync(t => t.Token == refreshToken);
+            .FirstOrDefaultAsync(t => t.Token == refreshToken && t.UserId == userId);
 
         if (tokenEntity == null || tokenEntity.IsRevoked || tokenEntity.ExpiresAt < DateTime.UtcNow)
         {
