@@ -31,4 +31,18 @@ public class AccountController : ControllerBase
 
         return Ok(response.Data);
     }
+    
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginAccountRequestDto loginDto)
+    {
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var response = await _accountService.Login(loginDto, Response, ipAddress);
+        
+        if (!response.Success)
+        {
+            return BadRequest(response.Message);
+        }
+        
+        return Ok(response.Data);
+    }
 }

@@ -82,4 +82,38 @@ public class AccountService : IAccountService
             return ServiceResponseHelper.CreateErrorResponse<RegisterAccountResponseDto>(ex.Message);
         }
     }
+    
+    public async Task<ServiceResponseDto<LoginAccountResponseDto>> Login(LoginAccountRequestDto loginAccountRequestDto, HttpResponse response, string ipAddress)
+    {
+        try
+        {
+            var user = await _userManager.FindByNameAsync(loginAccountRequestDto.EmailOrUsername)
+                       ?? await _userManager.FindByEmailAsync(loginAccountRequestDto.EmailOrUsername);
+            if (user == null)
+            {
+                return ServiceResponseHelper.CreateErrorResponse<LoginAccountResponseDto>("Invalid username or password");
+            }
+
+            var isPasswordValid = await _userManager.CheckPasswordAsync(user, loginAccountRequestDto.Password);
+            if (!isPasswordValid)
+            {
+                return ServiceResponseHelper.CreateErrorResponse<LoginAccountResponseDto>("Invalid username or password");
+            }
+
+            var accessToken = await _tokenService.CreateToken(user);
+            var refreshToken = await _tokenService.CreateRefreshToken(user, ipAddress);
+            _tokenService.SetRefreshTokenCookie(response, refreshToken);
+
+            var loginResponse = new LoginAccountResponseDto
+            {
+                AccessToken = accessToken
+            };
+            
+            return ServiceResponseHelper.CreateSuccessResponse(loginResponse, "Login successful");
+        }
+        catch (Exception ex)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<LoginAccountResponseDto>(ex.Message);
+        }
+    }
 }
