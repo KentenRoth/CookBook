@@ -10,4 +10,5 @@ public interface IAccountService
         HttpResponse response, string ipAddress);
     Task<ServiceResponseDto<LoginAccountResponseDto>> Login(LoginAccountRequestDto loginDto, HttpResponse response,
         string ipAddress);
+    Task<ServiceResponseDto<EmptyDto>> Logout(HttpRequest request, HttpResponse response, string ipAddress);
 }
