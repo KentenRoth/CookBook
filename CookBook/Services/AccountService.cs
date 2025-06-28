@@ -137,4 +137,26 @@ public class AccountService : IAccountService
             return ServiceResponseHelper.CreateErrorResponse<EmptyDto>(ex.Message);
         }
     }
+    
+    public async Task<ServiceResponseDto<EmptyDto>> LogoutAll(HttpRequest request, HttpResponse response, string ipAddress)
+    {
+        try
+        {
+            var refreshToken = request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return ServiceResponseHelper.CreateErrorResponse<EmptyDto>("No refresh token found");
+            }
+            var user = await _tokenService.GetUserFromRefreshToken(refreshToken);
+            var userId = user.Id;
+            await _tokenService.RevokeAllRefreshTokens(userId, ipAddress);
+            response.Cookies.Delete("refreshToken");
+
+            return ServiceResponseHelper.CreateSuccessResponse(new EmptyDto(), "Logged out from all devices successfully");
+        }
+        catch (Exception ex)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<EmptyDto>(ex.Message);
+        }
+    }
 }

@@ -59,4 +59,18 @@ public class AccountController : ControllerBase
         
         return Ok(response.Data);
     }
+    
+    [HttpPost("logoutall")]
+    public async Task<IActionResult> LogoutAll()
+    {
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var response = await _accountService.LogoutAll(Request, Response, ipAddress);
+        
+        if (!response.Success)
+        {
+            return BadRequest(response.Message);
+        }
+        
+        return Ok(response.Data);
+    }
 }
