@@ -7,6 +7,7 @@ using CookBook.Helpers;
 using CookBook.Interfaces;
 using CookBook.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CookBook.Services;
 
@@ -158,5 +159,40 @@ public class AccountService : IAccountService
         {
             return ServiceResponseHelper.CreateErrorResponse<EmptyDto>(ex.Message);
         }
+    }
+    
+    public async Task<ServiceResponseDto<MeAccountResponseDto>> GetMe(HttpRequest request)
+    {
+        var refreshToken = request.Cookies["refreshToken"];
+        
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            return ServiceResponseHelper.CreateErrorResponse<MeAccountResponseDto>("No refresh token found.");
+        }
+
+        var user = await _tokenService.GetUserFromRefreshToken(refreshToken);
+
+        if (user == null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<MeAccountResponseDto>("Invalid refresh token.");
+        }
+        
+        var userSettings = await _context.UserSettings
+            .FirstOrDefaultAsync(us => us.UserId == user.Id);
+
+        var meDto = new MeAccountResponseDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Username = user.UserName,
+            CreatedAt = user.CreatedAt,
+            UserSettings = new UserSettingsResponseDto
+            {
+                ColorMode = userSettings.ColorMode
+            }
+        };
+        
+        return ServiceResponseHelper.CreateSuccessResponse(meDto, "User retrieved successfully");
     }
 }

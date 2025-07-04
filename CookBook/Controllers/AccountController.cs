@@ -73,4 +73,17 @@ public class AccountController : ControllerBase
         
         return Ok(response.Data);
     }
+    
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMe() 
+    {
+        var response = await _accountService.GetMe(Request);
+        
+        if (!response.Success)
+        {
+            return BadRequest(response.Message);
+        }
+        
+        return Ok(response.Data);
+    }
 }
