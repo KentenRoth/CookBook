@@ -1,4 +1,5 @@
 using CookBook.DTOs.Account.Request;
+using CookBook.DTOs.Account.Response;
 using CookBook.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -78,6 +79,20 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> GetMe() 
     {
         var response = await _accountService.GetMe(Request);
+        
+        if (!response.Success)
+        {
+            return BadRequest(response.Message);
+        }
+        
+        return Ok(response.Data);
+    }
+    
+    [HttpPut("usersettings")]
+    public async Task<IActionResult> UpdateUserSettings([FromBody] UpdateUserSettingsRequestDto updateUserSettingsRequestDto)
+    {
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var response = await _accountService.UpdateUserSettings(updateUserSettingsRequestDto, Request);
         
         if (!response.Success)
         {

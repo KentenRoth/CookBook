@@ -195,4 +195,36 @@ public class AccountService : IAccountService
         
         return ServiceResponseHelper.CreateSuccessResponse(meDto, "User retrieved successfully");
     }
+    
+    public async Task<ServiceResponseDto<EmptyDto>> UpdateUserSettings(UpdateUserSettingsRequestDto updateUserSettingsRequestDto, HttpRequest request)
+    {
+        var refreshToken = request.Cookies["refreshToken"];
+        
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            return ServiceResponseHelper.CreateErrorResponse<EmptyDto>("No refresh token found.");
+        }
+
+        var user = await _tokenService.GetUserFromRefreshToken(refreshToken);
+
+        if (user == null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<EmptyDto>("Invalid refresh token.");
+        }
+
+        var userSettings = await _context.UserSettings
+            .FirstOrDefaultAsync(us => us.UserId == user.Id);
+
+        if (userSettings == null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<EmptyDto>("User settings not found.");
+        }
+
+        userSettings.ColorMode = updateUserSettingsRequestDto.ColorMode;
+        
+        _context.UserSettings.Update(userSettings);
+        await _context.SaveChangesAsync();
+
+        return ServiceResponseHelper.CreateSuccessResponse(new EmptyDto(), "User settings updated successfully");
+    }
 }
