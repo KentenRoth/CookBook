@@ -91,7 +91,6 @@ public class AccountController : ControllerBase
     [HttpPut("usersettings")]
     public async Task<IActionResult> UpdateUserSettings([FromBody] UpdateUserSettingsRequestDto updateUserSettingsRequestDto)
     {
-        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         var response = await _accountService.UpdateUserSettings(updateUserSettingsRequestDto, Request);
         
         if (!response.Success)
@@ -99,6 +98,17 @@ public class AccountController : ControllerBase
             return BadRequest(response.Message);
         }
         
+        return Ok(response.Data);
+    }
+
+    [HttpPut("user")]
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequestDto updateUserRequestDto)
+    {
+        var response = await _accountService.UpdateUser(updateUserRequestDto, Request);
+        if (!response.Success)
+        {
+            return BadRequest(response.Message);
+        }
         return Ok(response.Data);
     }
 }

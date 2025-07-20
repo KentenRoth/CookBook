@@ -227,4 +227,78 @@ public class AccountService : IAccountService
 
         return ServiceResponseHelper.CreateSuccessResponse(new EmptyDto(), "User settings updated successfully");
     }
+    
+    public async Task<ServiceResponseDto<UpdateUserResponseDto>> UpdateUser(UpdateUserRequestDto dto,
+        HttpRequest request)
+    {
+        var refreshToken = request.Cookies["refreshToken"];
+
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            return ServiceResponseHelper.CreateErrorResponse<UpdateUserResponseDto>("No refresh token found.");
+        }
+        var user = await _tokenService.GetUserFromRefreshToken(refreshToken);
+
+        if (user == null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<UpdateUserResponseDto>("Invalid refresh token.");
+        }
+        
+        var isPasswordValid = await _userManager.CheckPasswordAsync(user, dto.CurrentPassword);
+        if (!isPasswordValid)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<UpdateUserResponseDto>("Invalid password.");
+        }
+        
+        var updateErrors = new List<string>();
+        bool hasChanges = false;
+
+        if (!string.IsNullOrWhiteSpace(dto.Name) && dto.Name != user.Name)
+        {
+            user.Name = dto.Name;
+            hasChanges = true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.Email) && dto.Email != user.Email)
+        {
+            user.Email = dto.Email;
+            hasChanges = true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.Username) && dto.Username != user.UserName)
+        {
+            user.UserName = dto.Username;
+            hasChanges = true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.NewPassword))
+        {
+            var passwordResult = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            if (!passwordResult.Succeeded)
+                updateErrors.AddRange(passwordResult.Errors.Select(e => e.Description));
+        }
+
+        if (hasChanges)
+        {
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                updateErrors.AddRange(updateResult.Errors.Select(e => e.Description));
+        }
+
+        if (updateErrors.Any())
+            return ServiceResponseHelper.CreateErrorResponse<UpdateUserResponseDto>(
+                $"Update failed: {string.Join(", ", updateErrors)}"
+            );
+
+        var response = new UpdateUserResponseDto
+        {
+            Name = user.Name,
+            Email = user.Email,
+            Username = user.UserName
+        };
+
+        return ServiceResponseHelper.CreateSuccessResponse(response, "User updated successfully.");
+    }
+    
+    
 }
