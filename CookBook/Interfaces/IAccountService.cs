@@ -15,4 +15,5 @@ public interface IAccountService
     Task<ServiceResponseDto<MeAccountResponseDto>> GetMe(HttpRequest request);
     Task<ServiceResponseDto<EmptyDto>> UpdateUserSettings(UpdateUserSettingsRequestDto updateUserSettingsRequestDto, HttpRequest request);
     Task<ServiceResponseDto<UpdateUserResponseDto>> UpdateUser(UpdateUserRequestDto updateUserRequestDto, HttpRequest request);
+    Task<ServiceResponseDto<EmptyDto>> DeleteUser(HttpRequest request);
 }

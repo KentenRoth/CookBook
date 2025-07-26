@@ -111,4 +111,15 @@ public class AccountController : ControllerBase
         }
         return Ok(response.Data);
     }
+
+    [HttpDelete("user")]
+    public async Task<IActionResult> DeleteUser()
+    {
+        var response = await _accountService.DeleteUser(Request);
+        if (!response.Success)
+        {
+            return BadRequest(response.Message);
+        }
+        return Ok(response.Data);
+    }
 }

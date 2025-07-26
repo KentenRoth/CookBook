@@ -299,6 +299,34 @@ public class AccountService : IAccountService
 
         return ServiceResponseHelper.CreateSuccessResponse(response, "User updated successfully.");
     }
+
+    public async Task<ServiceResponseDto<EmptyDto>> DeleteUser(HttpRequest request)
+    {
+        var refreshToken = request.Cookies["refreshToken"];
+
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            return ServiceResponseHelper.CreateErrorResponse<EmptyDto>("No refresh token found.");
+        }
+
+        var user = await _tokenService.GetUserFromRefreshToken(refreshToken);
+        
+        if (user == null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<EmptyDto>("Invalid refresh token.");
+        }
+        
+        var result = await _userManager.DeleteAsync(user);
+
+        if (!result.Succeeded)
+        {
+            var errors = result.Errors.Select(e => e.Description);
+            return ServiceResponseHelper.CreateErrorResponse<EmptyDto>($"Delete failed: {string.Join(", ", errors)}");
+        }
+        
+        return ServiceResponseHelper.CreateSuccessResponse(new EmptyDto(), "User deleted successfully");
+        
+    }
     
     
 }
