@@ -20,6 +20,8 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
     public DbSet<Tag> Tags { get; set; }
     public DbSet<RefreshTokens> RefreshTokens { get; set; }
     public DbSet<UserSettings> UserSettings { get; set; }
+    public DbSet<FavoriteRecipe> FavoriteRecipes { get; set; }
+    public DbSet<RecipeStep> RecipeSteps { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -54,6 +56,21 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
             .WithOne(b => b.User)
             .HasForeignKey<UserSettings>(b => b.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<FavoriteRecipe>()
+            .HasKey(fr => new { fr.UserId, fr.RecipeId });
+
+        modelBuilder.Entity<FavoriteRecipe>()
+            .HasOne(fr => fr.User)
+            .WithMany(u => u.FavoriteRecipes)
+            .HasForeignKey(fr => fr.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<FavoriteRecipe>()
+            .HasOne(fr => fr.Recipe)
+            .WithMany(r => r.FavoritedBy)
+            .HasForeignKey(fr => fr.RecipeId)
+            .OnDelete(DeleteBehavior.Restrict);
         
         
         List<IdentityRole> roles = new List<IdentityRole>

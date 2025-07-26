@@ -13,4 +13,6 @@ public class AppUser : IdentityUser
     public ICollection<Recipe> Recipes { get; set; } = new List<Recipe>();
     public ICollection<RefreshTokens> RefreshTokens { get; set; } = new List<RefreshTokens>();
     public UserSettings? UserSettings { get; set; }
+    public ICollection<FavoriteRecipe> FavoriteRecipes { get; set; } = new List<FavoriteRecipe>();
+
 }
