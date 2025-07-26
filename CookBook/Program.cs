@@ -28,8 +28,8 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
-builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterAccountRequestDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserRequestDtoValidator>();
 
 var app = builder.Build();
 

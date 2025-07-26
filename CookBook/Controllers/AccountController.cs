@@ -1,13 +1,13 @@
 using CookBook.DTOs.Account.Request;
 using CookBook.DTOs.Account.Response;
 using CookBook.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CookBook.Controllers;
 
 
 [Route("api/account")]
-[ApiController]
 
 public class AccountController : ControllerBase
 {
@@ -19,15 +19,28 @@ public class AccountController : ControllerBase
     }
     
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterAccountRequestDto registerDto)
+    public async Task<IActionResult> Register([FromServices] IValidator<RegisterAccountRequestDto> validator, [FromBody] RegisterAccountRequestDto registerDto)
     {
+        var validationResult = await validator.ValidateAsync(registerDto);
+
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(e => e.ErrorMessage).ToArray()
+                );
+
+            return BadRequest(new ValidationProblemDetails(errors));
+        }
+
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-        
         var response = await _accountService.Register(registerDto, Response, ipAddress);
-        
+
         if (!response.Success)
         {
-            return StatusCode(500, response.Message);  
+            return StatusCode(500, response.Message);
         }
 
         return Ok(response.Data);
@@ -102,13 +115,30 @@ public class AccountController : ControllerBase
     }
 
     [HttpPut("user")]
-    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequestDto updateUserRequestDto)
+    public async Task<IActionResult> UpdateUser(
+        [FromServices] IValidator<UpdateUserRequestDto> validator,
+        [FromBody] UpdateUserRequestDto updateUserRequestDto)
     {
+        var validationResult = await validator.ValidateAsync(updateUserRequestDto);
+
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(e => e.ErrorMessage).ToArray()
+                );
+
+            return BadRequest(new ValidationProblemDetails(errors));
+        }
+
         var response = await _accountService.UpdateUser(updateUserRequestDto, Request);
         if (!response.Success)
         {
             return BadRequest(response.Message);
         }
+
         return Ok(response.Data);
     }
 
