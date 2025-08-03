@@ -25,7 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="DTOs\Recipes\" />
       <Folder Include="Extensions\" />
       <Folder Include="Mappers\" />
       <Folder Include="Repositories\" />
