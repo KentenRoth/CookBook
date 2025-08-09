@@ -1,0 +1,84 @@
+using AutoMapper;
+using CookBook.Data;
+using CookBook.DTOs;
+using CookBook.DTOs.Recipes.Request;
+using CookBook.DTOs.Recipes.Response;
+using CookBook.Helpers;
+using CookBook.Interfaces;
+using CookBook.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace CookBook.Services;
+
+public class RecipeService : IRecipeService
+{
+    private readonly UserManager<AppUser> _userManager;
+    private readonly ApplicationDBContext _context;
+    private readonly ITokenService _tokenService;
+    private readonly IMapper _mapper;
+
+    public RecipeService(UserManager<AppUser> userManager, ApplicationDBContext context, ITokenService tokenService, IMapper mapper)
+    {
+        _userManager = userManager;
+        _context = context;
+        _tokenService = tokenService;
+        _mapper = mapper;
+    }
+
+    public async Task<ServiceResponseDto<RecipeResponseDto>> CreateRecipe(CreateRecipeDto dto, string userId)
+    {
+        var recipe = new Recipe
+        {
+            Name = dto.Name ?? string.Empty,
+            Description = dto.Description ?? string.Empty,
+            IsPublic = dto.IsPublic,
+            Servings = dto.Servings,
+            PrepTimeMinutes = dto.PrepTimeMinutes,
+            CookTimeMinutes = dto.CookTimeMinutes,
+            DateCreated = DateTime.UtcNow,
+            UserId = userId,
+            RecipeSteps = dto.Steps.Select(s => new RecipeStep
+            {
+                StepNumber = s.StepNumber,
+                Instruction = s.Instruction ?? string.Empty
+            }).ToList(),
+            IngredientGroups = dto.IngredientGroups.Select(g => new IngredientGroup
+            {
+                Name = g.Name ?? string.Empty,
+                Ingredients = (g.Ingredients ?? new List<CreateIngredientDto>()).Select(i => new Ingredient
+                {
+                    Name = i.Name ?? string.Empty,
+                    Amount = i.Amount ?? string.Empty
+                }).ToList()
+            }).ToList()
+        };
+        
+        var tags = new List<Tag>();
+
+        foreach (var tagName in dto.Tags.Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            var existingTag = await _context.Tags
+                .FirstOrDefaultAsync(t => t.Name.ToLower() == tagName.ToLower());
+
+            if (existingTag != null)
+            {
+                tags.Add(existingTag);
+            }
+            else
+            {
+                tags.Add(new Tag { Name = tagName });
+            }
+        }
+
+        recipe.Tags = tags;
+
+        _context.Recipes.Add(recipe);
+        await _context.SaveChangesAsync();
+
+        var responseDto = _mapper.Map<RecipeResponseDto>(recipe);
+
+        return ServiceResponseHelper.CreateSuccessResponse<RecipeResponseDto>(responseDto);
+    }
+    
+}

@@ -24,9 +24,12 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     options.Password.RequiredLength = 6;
 }).AddEntityFrameworkStores<ApplicationDBContext>();
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddControllers();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IRecipeService, RecipeService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterAccountRequestDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserRequestDtoValidator>();

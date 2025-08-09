@@ -9,7 +9,7 @@ public class IngredientGroup
     [MaxLength(100)]
     public string Name { get; set; } = string.Empty;
     public int RecipeId { get; set; }
-    
-    public required Recipe Recipe { get; set; }
+
+    public Recipe Recipe { get; set; } = null!;
     public ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
 }

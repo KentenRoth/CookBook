@@ -6,7 +6,7 @@ public class RecipeStep
 
     public int RecipeId { get; set; }
 
-    public required Recipe Recipe { get; set; }
+    public Recipe Recipe { get; set; } = null!;
 
     public int StepNumber { get; set; } 
 

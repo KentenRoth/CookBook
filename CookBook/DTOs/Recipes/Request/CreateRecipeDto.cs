@@ -2,11 +2,10 @@ namespace CookBook.DTOs.Recipes.Request;
 
 public class CreateRecipeDto
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     public decimal Servings { get; set; }
     public bool IsPublic { get; set; }
-    public DateTime CreatedAt { get; set; }
     
     public int? PrepTimeMinutes { get; set; }
     public int? CookTimeMinutes { get; set; }

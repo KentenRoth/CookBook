@@ -72,6 +72,14 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
             .HasForeignKey(fr => fr.RecipeId)
             .OnDelete(DeleteBehavior.Restrict);
         
+        modelBuilder.Entity<Recipe>()
+            .HasMany(r => r.Tags)
+            .WithMany(t => t.Recipes)
+            .UsingEntity<Dictionary<string, object>>(
+                "RecipeTag", // name of join table
+                r => r.HasOne<Tag>().WithMany().HasForeignKey("TagId"),
+                t => t.HasOne<Recipe>().WithMany().HasForeignKey("RecipeId"));
+        
         
         List<IdentityRole> roles = new List<IdentityRole>
         {

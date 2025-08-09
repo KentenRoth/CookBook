@@ -18,12 +18,12 @@ public class Recipe
     public bool IsPublic { get; set; } = true;
     
     [MaxLength(450)]
-    public required string UserId { get; set; }
+    public string UserId { get; set; }
     
     public ICollection<IngredientGroup> IngredientGroups { get; set; } = new List<IngredientGroup>();
     public ICollection<RecipeStep> RecipeSteps { get; set; } = new List<RecipeStep>();
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
-    public required AppUser User { get; set; }
+    public AppUser User { get; set; }
     public ICollection<FavoriteRecipe> FavoritedBy { get; set; } = new List<FavoriteRecipe>();
 
 }
