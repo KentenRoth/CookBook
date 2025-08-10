@@ -47,7 +47,7 @@ public class AccountController : ControllerBase
     }
     
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginAccountRequestDto loginDto)
+    public async Task<IActionResult> Login([FromBody] LoginAccountRequestDto loginDto)
     {
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         var response = await _accountService.Login(loginDto, Response, ipAddress);
