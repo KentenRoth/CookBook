@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CookBook.Controllers;
 
-
+[ApiController]
 [Route("api/account")]
 
 public class AccountController : ControllerBase
@@ -47,7 +47,7 @@ public class AccountController : ControllerBase
     }
     
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginAccountRequestDto loginDto)
+    public async Task<IActionResult> Login( LoginAccountRequestDto loginDto)
     {
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         var response = await _accountService.Login(loginDto, Response, ipAddress);
@@ -102,7 +102,7 @@ public class AccountController : ControllerBase
     }
     
     [HttpPut("usersettings")]
-    public async Task<IActionResult> UpdateUserSettings([FromBody] UpdateUserSettingsRequestDto updateUserSettingsRequestDto)
+    public async Task<IActionResult> UpdateUserSettings(UpdateUserSettingsRequestDto updateUserSettingsRequestDto)
     {
         var response = await _accountService.UpdateUserSettings(updateUserSettingsRequestDto, Request);
         
