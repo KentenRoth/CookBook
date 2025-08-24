@@ -12,7 +12,7 @@ public interface IAccountService
         string ipAddress);
     Task<ServiceResponseDto<EmptyDto>> Logout(HttpRequest request, HttpResponse response, string ipAddress);
     Task<ServiceResponseDto<EmptyDto>> LogoutAll(HttpRequest request, HttpResponse response, string ipAddress);
-    Task<ServiceResponseDto<MeAccountResponseDto>> GetMe(HttpRequest request);
+    Task<ServiceResponseDto<MeAccountResponseDto>> GetMe(string userId);
     Task<ServiceResponseDto<EmptyDto>> UpdateUserSettings(UpdateUserSettingsRequestDto updateUserSettingsRequestDto, HttpRequest request);
     Task<ServiceResponseDto<UpdateUserResponseDto>> UpdateUser(UpdateUserRequestDto updateUserRequestDto, HttpRequest request);
     Task<ServiceResponseDto<EmptyDto>> DeleteUser(HttpRequest request);

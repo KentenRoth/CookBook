@@ -161,20 +161,13 @@ public class AccountService : IAccountService
         }
     }
     
-    public async Task<ServiceResponseDto<MeAccountResponseDto>> GetMe(HttpRequest request)
+    public async Task<ServiceResponseDto<MeAccountResponseDto>> GetMe(string userId)
     {
-        var refreshToken = request.Cookies["refreshToken"];
-        
-        if (string.IsNullOrEmpty(refreshToken))
-        {
-            return ServiceResponseHelper.CreateErrorResponse<MeAccountResponseDto>("No refresh token found.");
-        }
-
-        var user = await _tokenService.GetUserFromRefreshToken(refreshToken);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
         {
-            return ServiceResponseHelper.CreateErrorResponse<MeAccountResponseDto>("Invalid refresh token.");
+            return ServiceResponseHelper.CreateErrorResponse<MeAccountResponseDto>("User not found.");
         }
         
         var userSettings = await _context.UserSettings

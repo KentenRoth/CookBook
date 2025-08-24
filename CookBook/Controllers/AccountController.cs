@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using CookBook.DTOs.Account.Request;
 using CookBook.DTOs.Account.Response;
 using CookBook.Interfaces;
@@ -91,8 +92,15 @@ public class AccountController : ControllerBase
     [HttpGet("me")]
     public async Task<IActionResult> GetMe() 
     {
-        var response = await _accountService.GetMe(Request);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var response = await _accountService.GetMe(userId);
+
         if (!response.Success)
         {
             return BadRequest(response.Message);
