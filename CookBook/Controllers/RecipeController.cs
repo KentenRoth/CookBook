@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using CookBook.DTOs.Recipes.Request;
 using CookBook.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -23,37 +24,14 @@ public class RecipeController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> CreateRecipe(CreateRecipeDto dto)
     {
-        var refreshToken = Request.Cookies["refreshToken"];
-        if (string.IsNullOrEmpty(refreshToken))
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
         {
-            return Unauthorized("No Refresh Token");
+            return Unauthorized();
         }
-
-        var user = await _tokenService.GetUserFromRefreshToken(refreshToken);
-        if (user == null)
-        {
-            return Unauthorized("Invalid Refresh Token");
-        }
-
-        if (dto == null)
-            return BadRequest("Request body is null.");
-
-        if (dto.IngredientGroups == null)
-            return BadRequest("IngredientGroups cannot be null.");
-
-        if (dto.Steps == null)
-            return BadRequest("Steps cannot be null.");
-
-        // Debug: check user.Id and dto contents here
-        if (user.Id == null)
-            return Unauthorized("User ID is null.");
-
-        if (string.IsNullOrEmpty(dto.Name))
-            return BadRequest("Name cannot be empty.");
-
-        // At this point, dto and user.Id are definitely not null
-
-        var recipe = await _recipeService.CreateRecipe(dto, user.Id);
+        
+        var recipe = await _recipeService.CreateRecipe(dto, userId);
 
         return Ok(recipe);
     }
