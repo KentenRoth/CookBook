@@ -189,20 +189,13 @@ public class AccountService : IAccountService
         return ServiceResponseHelper.CreateSuccessResponse(meDto, "User retrieved successfully");
     }
     
-    public async Task<ServiceResponseDto<EmptyDto>> UpdateUserSettings(UpdateUserSettingsRequestDto updateUserSettingsRequestDto, HttpRequest request)
+    public async Task<ServiceResponseDto<EmptyDto>> UpdateUserSettings(UpdateUserSettingsRequestDto updateUserSettingsRequestDto, string userId)
     {
-        var refreshToken = request.Cookies["refreshToken"];
-        
-        if (string.IsNullOrEmpty(refreshToken))
-        {
-            return ServiceResponseHelper.CreateErrorResponse<EmptyDto>("No refresh token found.");
-        }
-
-        var user = await _tokenService.GetUserFromRefreshToken(refreshToken);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
         {
-            return ServiceResponseHelper.CreateErrorResponse<EmptyDto>("Invalid refresh token.");
+            return ServiceResponseHelper.CreateErrorResponse<EmptyDto>("User not found.");
         }
 
         var userSettings = await _context.UserSettings
@@ -222,19 +215,13 @@ public class AccountService : IAccountService
     }
     
     public async Task<ServiceResponseDto<UpdateUserResponseDto>> UpdateUser(UpdateUserRequestDto dto,
-        HttpRequest request)
+        string userId)
     {
-        var refreshToken = request.Cookies["refreshToken"];
-
-        if (string.IsNullOrEmpty(refreshToken))
-        {
-            return ServiceResponseHelper.CreateErrorResponse<UpdateUserResponseDto>("No refresh token found.");
-        }
-        var user = await _tokenService.GetUserFromRefreshToken(refreshToken);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user == null)
         {
-            return ServiceResponseHelper.CreateErrorResponse<UpdateUserResponseDto>("Invalid refresh token.");
+            return ServiceResponseHelper.CreateErrorResponse<UpdateUserResponseDto>("User not found.");
         }
         
         var isPasswordValid = await _userManager.CheckPasswordAsync(user, dto.CurrentPassword);

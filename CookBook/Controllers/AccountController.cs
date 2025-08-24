@@ -93,7 +93,7 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> GetMe() 
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized();
@@ -112,8 +112,15 @@ public class AccountController : ControllerBase
     [HttpPut("usersettings")]
     public async Task<IActionResult> UpdateUserSettings(UpdateUserSettingsRequestDto updateUserSettingsRequestDto)
     {
-        var response = await _accountService.UpdateUserSettings(updateUserSettingsRequestDto, Request);
-        
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var response = await _accountService.UpdateUserSettings(updateUserSettingsRequestDto, userId);
+
         if (!response.Success)
         {
             return BadRequest(response.Message);
@@ -141,7 +148,14 @@ public class AccountController : ControllerBase
             return BadRequest(new ValidationProblemDetails(errors));
         }
 
-        var response = await _accountService.UpdateUser(updateUserRequestDto, Request);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var response = await _accountService.UpdateUser(updateUserRequestDto, userId);
         if (!response.Success)
         {
             return BadRequest(response.Message);
