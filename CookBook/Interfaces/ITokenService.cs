@@ -1,3 +1,4 @@
+using CookBook.DTOs.Account.Response;
 using CookBook.Models;
 
 namespace CookBook.Interfaces;
@@ -11,4 +12,5 @@ public interface ITokenService
     Task RevokeRefreshToken(string refreshToken, string ipAddress);
     Task RevokeAllRefreshTokens(string userId, string ipAddress);
     Task<AppUser> GetUserFromRefreshToken(string refreshToken);
+    Task<RefreshDto> RefreshTokens(string refreshToken, HttpResponse response, string ipAddress);
 }

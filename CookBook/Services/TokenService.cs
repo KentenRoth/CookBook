@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using Azure;
 using CookBook.Data;
+using CookBook.DTOs.Account.Response;
 using CookBook.Interfaces;
 using CookBook.Models;
 using Microsoft.AspNetCore.Identity;
@@ -95,6 +96,7 @@ public class TokenService : ITokenService
             SameSite = SameSiteMode.Strict,
             Expires = DateTime.UtcNow.AddMonths(3)
         };
+        
         response.Cookies.Append("RefreshToken", refreshToken, cookieOptions);
     }
     
@@ -139,20 +141,36 @@ public class TokenService : ITokenService
         
         await _context.SaveChangesAsync();
     }
+
+    public async Task<RefreshDto> RefreshTokens(string refreshToken, HttpResponse response, string ipAddress)
+    {
+        var user = await GetUserFromRefreshToken(refreshToken);
+        
+        await RevokeRefreshToken(refreshToken, ipAddress);
+        
+        var accessToken = await CreateToken(user);
+        var newRefreshToken = await CreateRefreshToken(user, ipAddress);
+        SetRefreshTokenCookie(response, newRefreshToken);
+
+        return new RefreshDto
+        {
+            AccessToken = accessToken,
+        };
+    }
     
     public async Task<AppUser> GetUserFromRefreshToken(string refreshToken)
     {
         var tokenEntity = await _context.RefreshTokens
             .Include(t => t.User)
             .FirstOrDefaultAsync(t => t.Token == refreshToken && !t.IsRevoked && t.ExpiresAt > DateTime.UtcNow);
-        
+
         if (tokenEntity == null)
         {
             throw new SecurityTokenException("Invalid or expired refresh token");
         }
 
         var user = await _userManager.FindByIdAsync(tokenEntity.UserId);
-    
+
         if (user == null)
         {
             throw new SecurityTokenException("User not found");
