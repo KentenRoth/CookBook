@@ -141,13 +141,34 @@ public class TokenService : ITokenService
         
         await _context.SaveChangesAsync();
     }
+    
+    public async Task<RefreshTokens?> ValidateRefreshToken(string refreshToken)
+    {
+        var token = await _context.RefreshTokens
+            .Include(rt => rt.User)
+            .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+
+        if (token == null || token.IsRevoked || token.ExpiresAt < DateTime.UtcNow)
+        {
+            return null;
+        }
+
+        return token;
+    }
 
     public async Task<RefreshDto> RefreshTokens(string refreshToken, HttpResponse response, string ipAddress)
     {
+
+        var existingToken = await ValidateRefreshToken(refreshToken);
+        if (existingToken == null)
+
+        {
+            throw new SecurityTokenException("Invalid refresh token.");
+        }
         var user = await GetUserFromRefreshToken(refreshToken);
-        
+
         await RevokeRefreshToken(refreshToken, ipAddress);
-        
+
         var accessToken = await CreateToken(user);
         var newRefreshToken = await CreateRefreshToken(user, ipAddress);
         SetRefreshTokenCookie(response, newRefreshToken);
