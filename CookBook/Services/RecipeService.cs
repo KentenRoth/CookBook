@@ -53,7 +53,7 @@ public class RecipeService : IRecipeService
                 }).ToList()
             }).ToList()
         };
-        
+
         var tags = new List<Tag>();
 
         foreach (var tagName in dto.Tags.Distinct(StringComparer.OrdinalIgnoreCase))
@@ -80,5 +80,22 @@ public class RecipeService : IRecipeService
 
         return ServiceResponseHelper.CreateSuccessResponse<RecipeResponseDto>(responseDto);
     }
+
+    public async Task<ServiceResponseDto<EmptyDto>> DeleteRecipe(int id, string userId)
+    {
+        var recipe = await _context.Recipes
+            .Include(r => r.User)
+            .FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId);
     
+        if (recipe == null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<EmptyDto>("Recipe not found or you do not have permission to delete it.");
+        }
+    
+        _context.Recipes.Remove(recipe);
+        await _context.SaveChangesAsync();
+    
+        return ServiceResponseHelper.CreateSuccessResponse<EmptyDto>(new EmptyDto());
+    }
+
 }

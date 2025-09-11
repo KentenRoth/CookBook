@@ -20,7 +20,7 @@ public class RecipeController : ControllerBase
         _tokenService = tokenService;
         _recipeService = recipeService;
     }
-    
+
     [HttpPost("create")]
     public async Task<IActionResult> CreateRecipe(CreateRecipeDto dto)
     {
@@ -30,9 +30,29 @@ public class RecipeController : ControllerBase
         {
             return Unauthorized();
         }
-        
+
         var recipe = await _recipeService.CreateRecipe(dto, userId);
 
         return Ok(recipe);
+    }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRecipe(int id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _recipeService.DeleteRecipe(id, userId);
+
+        if (!result.Success)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 }

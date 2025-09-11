@@ -7,4 +7,5 @@ namespace CookBook.Interfaces;
 public interface IRecipeService
 {
     Task<ServiceResponseDto<RecipeResponseDto>> CreateRecipe(CreateRecipeDto dto, string userId);
+    Task<ServiceResponseDto<EmptyDto>> DeleteRecipe(int recipeId, string userId);
 }
