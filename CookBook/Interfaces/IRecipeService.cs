@@ -9,4 +9,5 @@ public interface IRecipeService
     Task<ServiceResponseDto<RecipeResponseDto>> CreateRecipe(CreateRecipeDto dto, string userId);
     Task<ServiceResponseDto<EmptyDto>> DeleteRecipe(int recipeId, string userId);
     Task<ServiceResponseDto<List<RecipeResponseDto>>> GetRecipes();
+    Task<ServiceResponseDto<RecipeResponseDto>> GetRecipeById(int id, string? userId = null);
 }

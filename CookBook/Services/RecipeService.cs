@@ -97,7 +97,7 @@ public class RecipeService : IRecipeService
 
         return ServiceResponseHelper.CreateSuccessResponse<EmptyDto>(new EmptyDto());
     }
-    
+
     public async Task<ServiceResponseDto<List<RecipeResponseDto>>> GetRecipes()
     {
         var recipes = await _context.Recipes
@@ -112,6 +112,31 @@ public class RecipeService : IRecipeService
         var responseDto = _mapper.Map<List<RecipeResponseDto>>(recipes);
 
         return ServiceResponseHelper.CreateSuccessResponse<List<RecipeResponseDto>>(responseDto);
+    }
+
+public async Task<ServiceResponseDto<RecipeResponseDto>> GetRecipeById(int id, string? userId = null)
+    {
+        var recipe = await _context.Recipes
+            .Include(r => r.User)
+            .Include(r => r.IngredientGroups)
+                .ThenInclude(ig => ig.Ingredients)
+            .Include(r => r.RecipeSteps)
+            .Include(r => r.Tags)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (recipe == null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<RecipeResponseDto>("Recipe not found.");
+        }
+
+        if (!recipe.IsPublic && (userId == null || recipe.UserId != userId))
+        {
+            return ServiceResponseHelper.CreateErrorResponse<RecipeResponseDto>("Recipe not found or you do not have permission to view it.");
+        }
+
+        var responseDto = _mapper.Map<RecipeResponseDto>(recipe);
+
+        return ServiceResponseHelper.CreateSuccessResponse<RecipeResponseDto>(responseDto);
     }
 
 }
