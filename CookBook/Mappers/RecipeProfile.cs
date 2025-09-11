@@ -8,14 +8,13 @@ public class RecipeProfile : Profile
 {
     public RecipeProfile()
     {
-        CreateMap<Recipe, RecipeResponseDto>()
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.DateCreated));
-        
-        CreateMap<Recipe, RecipeResponseDto>()
-            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.Name)));
+    CreateMap<Recipe, RecipeResponseDto>()
+        .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.DateCreated))
+        .ForMember(dest => dest.Steps, opt => opt.MapFrom(src => src.RecipeSteps))
+        .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.Tags.Select(t => t.Name)));
 
-        CreateMap<RecipeStep, RecipeStepResponseDto>();
-        CreateMap<IngredientGroup, IngredientGroupResponseDto>();
-        CreateMap<Ingredient, IngredientResponseDto>();
+    CreateMap<RecipeStep, RecipeStepResponseDto>();
+    CreateMap<IngredientGroup, IngredientGroupResponseDto>();
+    CreateMap<Ingredient, IngredientResponseDto>();
     }
 }

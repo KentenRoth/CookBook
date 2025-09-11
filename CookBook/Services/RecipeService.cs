@@ -86,16 +86,32 @@ public class RecipeService : IRecipeService
         var recipe = await _context.Recipes
             .Include(r => r.User)
             .FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId);
-    
+
         if (recipe == null)
         {
             return ServiceResponseHelper.CreateErrorResponse<EmptyDto>("Recipe not found or you do not have permission to delete it.");
         }
-    
+
         _context.Recipes.Remove(recipe);
         await _context.SaveChangesAsync();
-    
+
         return ServiceResponseHelper.CreateSuccessResponse<EmptyDto>(new EmptyDto());
+    }
+    
+    public async Task<ServiceResponseDto<List<RecipeResponseDto>>> GetRecipes()
+    {
+        var recipes = await _context.Recipes
+            .Where(r => r.IsPublic == true)
+            .Include(r => r.User)
+            .Include(r => r.IngredientGroups)
+                .ThenInclude(ig => ig.Ingredients)
+            .Include(r => r.RecipeSteps)
+            .Include(r => r.Tags)
+            .ToListAsync();
+
+        var responseDto = _mapper.Map<List<RecipeResponseDto>>(recipes);
+
+        return ServiceResponseHelper.CreateSuccessResponse<List<RecipeResponseDto>>(responseDto);
     }
 
 }

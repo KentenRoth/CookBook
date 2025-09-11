@@ -35,7 +35,16 @@ public class RecipeController : ControllerBase
 
         return Ok(recipe);
     }
-    
+
+    [HttpGet("allrecipes")]
+    public async Task<IActionResult> GetRecipes()
+    {
+
+        var recipes = await _recipeService.GetRecipes();
+
+        return Ok(recipes);
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRecipe(int id)
     {

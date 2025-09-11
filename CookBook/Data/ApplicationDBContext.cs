@@ -76,7 +76,7 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
             .HasMany(r => r.Tags)
             .WithMany(t => t.Recipes)
             .UsingEntity<Dictionary<string, object>>(
-                "RecipeTag", // name of join table
+                "RecipeTag",
                 r => r.HasOne<Tag>().WithMany().HasForeignKey("TagId"),
                 t => t.HasOne<Recipe>().WithMany().HasForeignKey("RecipeId"));
         
