@@ -114,7 +114,7 @@ public class RecipeService : IRecipeService
         return ServiceResponseHelper.CreateSuccessResponse<List<RecipeResponseDto>>(responseDto);
     }
 
-public async Task<ServiceResponseDto<RecipeResponseDto>> GetRecipeById(int id, string? userId = null)
+    public async Task<ServiceResponseDto<RecipeResponseDto>> GetRecipeById(int id, string? userId = null)
     {
         var recipe = await _context.Recipes
             .Include(r => r.User)
@@ -137,6 +137,22 @@ public async Task<ServiceResponseDto<RecipeResponseDto>> GetRecipeById(int id, s
         var responseDto = _mapper.Map<RecipeResponseDto>(recipe);
 
         return ServiceResponseHelper.CreateSuccessResponse<RecipeResponseDto>(responseDto);
+    }
+
+    public async Task<ServiceResponseDto<List<RecipeResponseDto>>> GetMyRecipes(string userId)
+    {
+        var recipes = await _context.Recipes
+            .Where(r => r.UserId == userId)
+            .Include(r => r.User)
+            .Include(r => r.IngredientGroups)
+                .ThenInclude(ig => ig.Ingredients)
+            .Include(r => r.RecipeSteps)
+            .Include(r => r.Tags)
+            .ToListAsync();
+
+        var responseDto = _mapper.Map<List<RecipeResponseDto>>(recipes);
+
+        return ServiceResponseHelper.CreateSuccessResponse<List<RecipeResponseDto>>(responseDto);
     }
 
 }

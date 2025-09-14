@@ -65,6 +65,21 @@ public class RecipeController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("myrecipes")]
+    public async Task<IActionResult> GetMyRecipes()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var recipes = await _recipeService.GetMyRecipes(userId);
+
+        return Ok(recipes);
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRecipeById(int id)
     {
