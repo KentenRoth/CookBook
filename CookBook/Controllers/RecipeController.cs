@@ -99,4 +99,18 @@ public class RecipeController : ControllerBase
 
         return Ok(recipe);
     }
+
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> GetRecipeByUser(string userId)
+    {
+        var recipes = await _recipeService.GetRecipeByUser(userId);
+
+        if (!recipes.Success)
+        {
+            return NotFound();
+        }
+
+        return Ok(recipes);
+    }
+
 }

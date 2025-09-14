@@ -155,4 +155,21 @@ public class RecipeService : IRecipeService
         return ServiceResponseHelper.CreateSuccessResponse<List<RecipeResponseDto>>(responseDto);
     }
 
+    public async Task<ServiceResponseDto<List<RecipeResponseDto>>> GetRecipeByUser(string userId)
+    {
+        var recipes = await _context.Recipes
+            .Where(r => r.UserId == userId)
+            .Where(r => r.IsPublic == true)
+            .Include(r => r.User)
+            .Include(r => r.IngredientGroups)
+                .ThenInclude(ig => ig.Ingredients)
+            .Include(r => r.RecipeSteps)
+            .Include(r => r.Tags)
+            .ToListAsync();
+
+        var responseDto = _mapper.Map<List<RecipeResponseDto>>(recipes);
+
+        return ServiceResponseHelper.CreateSuccessResponse<List<RecipeResponseDto>>(responseDto);
+    }
+
 }

@@ -11,4 +11,5 @@ public interface IRecipeService
     Task<ServiceResponseDto<List<RecipeResponseDto>>> GetRecipes();
     Task<ServiceResponseDto<RecipeResponseDto>> GetRecipeById(int id, string? userId = null);
     Task<ServiceResponseDto<List<RecipeResponseDto>>> GetMyRecipes(string userId);
+    Task<ServiceResponseDto<List<RecipeResponseDto>>> GetRecipeByUser(string userId);
 }
