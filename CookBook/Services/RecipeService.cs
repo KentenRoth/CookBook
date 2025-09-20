@@ -155,10 +155,10 @@ public class RecipeService : IRecipeService
         return ServiceResponseHelper.CreateSuccessResponse<List<RecipeResponseDto>>(responseDto);
     }
 
-    public async Task<ServiceResponseDto<List<RecipeResponseDto>>> GetRecipeByUser(string userId)
+    public async Task<ServiceResponseDto<List<RecipeResponseDto>>> GetRecipeByUser(string username)
     {
         var recipes = await _context.Recipes
-            .Where(r => r.UserId == userId)
+            .Where(r => r.User.UserName == username)
             .Where(r => r.IsPublic == true)
             .Include(r => r.User)
             .Include(r => r.IngredientGroups)

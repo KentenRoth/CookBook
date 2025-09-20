@@ -100,10 +100,10 @@ public class RecipeController : ControllerBase
         return Ok(recipe);
     }
 
-    [HttpGet("user/{userId}")]
-    public async Task<IActionResult> GetRecipeByUser(string userId)
+    [HttpGet("user/{username}")]
+    public async Task<IActionResult> GetRecipeByUser(string username)
     {
-        var recipes = await _recipeService.GetRecipeByUser(userId);
+        var recipes = await _recipeService.GetRecipeByUser(username);
 
         if (!recipes.Success)
         {
