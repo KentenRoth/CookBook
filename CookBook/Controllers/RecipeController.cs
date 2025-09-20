@@ -113,4 +113,12 @@ public class RecipeController : ControllerBase
         return Ok(recipes);
     }
 
+    [HttpGet("tags")]
+    public async Task<IActionResult> GetAllTags()
+    {
+        var tags = await _recipeService.GetAllTags();
+
+        return Ok(tags);
+    }
+
 }

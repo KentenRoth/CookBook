@@ -172,4 +172,16 @@ public class RecipeService : IRecipeService
         return ServiceResponseHelper.CreateSuccessResponse<List<RecipeResponseDto>>(responseDto);
     }
 
+    public async Task<ServiceResponseDto<List<RecipeTagResponseDto>>> GetAllTags()
+    {
+        var tags = await _context.Tags
+            .OrderBy(t => t.Name)
+            .Select(t => new RecipeTagResponseDto
+            {
+                Name = t.Name
+            })
+            .ToListAsync();
+
+        return ServiceResponseHelper.CreateSuccessResponse(tags);
+    }
 }
