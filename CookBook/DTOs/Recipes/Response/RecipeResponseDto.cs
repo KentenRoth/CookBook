@@ -13,6 +13,8 @@ public class RecipeResponseDto
     public int? CookTimeMinutes { get; set; }
     public string About { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
+    public string UserName { get; set; } = string.Empty;
+    public string CreatorName { get; set; } = string.Empty;
 
     public List<RecipeStepResponseDto> Steps { get; set; } = new();
     public List<IngredientGroupResponseDto> IngredientGroups { get; set; } = new();
