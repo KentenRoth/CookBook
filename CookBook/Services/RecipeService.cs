@@ -36,6 +36,8 @@ public class RecipeService : IRecipeService
             Servings = dto.Servings,
             PrepTimeMinutes = dto.PrepTimeMinutes,
             CookTimeMinutes = dto.CookTimeMinutes,
+            About = dto.About ?? string.Empty,
+            Notes = dto.Notes ?? string.Empty,
             DateCreated = DateTime.UtcNow,
             UserId = userId,
             RecipeSteps = dto.Steps.Select(s => new RecipeStep

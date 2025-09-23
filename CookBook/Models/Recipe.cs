@@ -15,6 +15,8 @@ public class Recipe
     public int? CookTimeMinutes { get; set; }
     [Precision(5, 2)]
     public decimal Servings { get; set; }
+    public string About { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
     public bool IsPublic { get; set; } = true;
     
     [MaxLength(450)]

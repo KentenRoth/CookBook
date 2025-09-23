@@ -9,7 +9,8 @@ public class CreateRecipeDto
     
     public int? PrepTimeMinutes { get; set; }
     public int? CookTimeMinutes { get; set; }
-    
+    public string About { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
     public List<CreateRecipeStepDto> Steps { get; set; } = new List<CreateRecipeStepDto>();
     public List<CreateIngredientGroupDto> IngredientGroups { get; set; } = new List<CreateIngredientGroupDto>();
     public List<string> Tags { get; set; } = new List<string>();
