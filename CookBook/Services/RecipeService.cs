@@ -186,4 +186,77 @@ public class RecipeService : IRecipeService
 
         return ServiceResponseHelper.CreateSuccessResponse(tags);
     }
+
+public async Task<ServiceResponseDto<RecipeResponseDto>> UpdateRecipe(int recipeId, UpdateRecipeRequestDto dto, string userId)
+    {
+        var recipe = await _context.Recipes
+            .Include(r => r.Tags)
+            .Include(r => r.RecipeSteps)
+            .Include(r => r.IngredientGroups)
+                .ThenInclude(ig => ig.Ingredients)
+            .FirstOrDefaultAsync(r => r.Id == recipeId && r.UserId == userId);
+
+        if (recipe == null)
+            return ServiceResponseHelper.CreateErrorResponse<RecipeResponseDto>("Recipe not found or not owned by user.");
+
+        if (dto.Name != null) recipe.Name = dto.Name;
+        if (dto.Description != null) recipe.Description = dto.Description;
+        if (dto.About != null) recipe.About = dto.About;
+        if (dto.Notes != null) recipe.Notes = dto.Notes;
+        if (dto.IsPublic.HasValue) recipe.IsPublic = dto.IsPublic.Value;
+        if (dto.PrepTimeMinutes.HasValue) recipe.PrepTimeMinutes = dto.PrepTimeMinutes.Value;
+        if (dto.CookTimeMinutes.HasValue) recipe.CookTimeMinutes = dto.CookTimeMinutes.Value;
+        if (dto.Servings.HasValue) recipe.Servings = dto.Servings.Value;
+
+        if (dto.Tags != null)
+        {
+            recipe.Tags.Clear();
+            var tags = await _context.Tags.Where(t => dto.Tags.Contains(t.Name)).ToListAsync();
+
+            foreach (var tagName in dto.Tags.Except(tags.Select(t => t.Name)))
+            {
+                var newTag = new Tag { Name = tagName };
+                _context.Tags.Add(newTag);
+                tags.Add(newTag);
+            }
+
+            recipe.Tags = tags;
+        }
+
+        if (dto.Steps != null)
+        {
+            recipe.RecipeSteps.Clear();
+            foreach (var stepDto in dto.Steps.OrderBy(s => s.StepNumber))
+            {
+                recipe.RecipeSteps.Add(new RecipeStep
+                {
+                    StepNumber = stepDto.StepNumber,
+                    Instruction = stepDto.Instruction
+                });
+            }
+        }
+
+        if (dto.IngredientGroups != null)
+        {
+            recipe.IngredientGroups.Clear();
+            foreach (var groupDto in dto.IngredientGroups)
+            {
+                var group = new IngredientGroup { Name = groupDto.Name };
+                foreach (var ingDto in groupDto.Ingredients)
+                {
+                    group.Ingredients.Add(new Ingredient
+                    {
+                        Name = ingDto.Name,
+                        Amount = ingDto.Amount
+                    });
+                }
+                recipe.IngredientGroups.Add(group);
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        var responseDto = _mapper.Map<RecipeResponseDto>(recipe);
+        return ServiceResponseHelper.CreateSuccessResponse(responseDto);
+    }
 }

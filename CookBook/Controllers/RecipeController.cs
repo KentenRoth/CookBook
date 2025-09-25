@@ -121,4 +121,24 @@ public class RecipeController : ControllerBase
         return Ok(tags);
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateRecipe(int id, UpdateRecipeRequestDto dto)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var recipe = await _recipeService.UpdateRecipe(id, dto, userId);
+
+        if (!recipe.Success)
+        {
+            return NotFound();
+        }
+
+        return Ok(recipe);
+    }
+
 }

@@ -13,4 +13,5 @@ public interface IRecipeService
     Task<ServiceResponseDto<List<RecipeResponseDto>>> GetMyRecipes(string userId);
     Task<ServiceResponseDto<List<RecipeResponseDto>>> GetRecipeByUser(string userId);
     Task<ServiceResponseDto<List<RecipeTagResponseDto>>> GetAllTags();
+    Task<ServiceResponseDto<RecipeResponseDto>> UpdateRecipe(int recipeId, UpdateRecipeRequestDto dto, string userId);
 }
