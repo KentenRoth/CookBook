@@ -187,7 +187,7 @@ public class RecipeService : IRecipeService
         return ServiceResponseHelper.CreateSuccessResponse(tags);
     }
 
-public async Task<ServiceResponseDto<RecipeResponseDto>> UpdateRecipe(int recipeId, UpdateRecipeRequestDto dto, string userId)
+    public async Task<ServiceResponseDto<RecipeResponseDto>> UpdateRecipe(int recipeId, UpdateRecipeRequestDto dto, string userId)
     {
         var recipe = await _context.Recipes
             .Include(r => r.Tags)
@@ -257,6 +257,35 @@ public async Task<ServiceResponseDto<RecipeResponseDto>> UpdateRecipe(int recipe
         await _context.SaveChangesAsync();
 
         var responseDto = _mapper.Map<RecipeResponseDto>(recipe);
+        return ServiceResponseHelper.CreateSuccessResponse(responseDto);
+    }
+    
+    public async Task<ServiceResponseDto<List<RecipeResponseDto>>> SearchRecipes(string query, string? currentUserId = null)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+            return ServiceResponseHelper.CreateSuccessResponse(new List<RecipeResponseDto>());
+
+        query = query.ToLower();
+
+        var recipes = await _context.Recipes
+        .Include(r => r.IngredientGroups)
+            .ThenInclude(ig => ig.Ingredients)
+        .Include(r => r.RecipeSteps)
+        .Include(r => r.Tags)
+        .Include(r => r.User)
+        .Where(r => 
+            (r.IsPublic || r.UserId == currentUserId) && 
+            (
+                r.Name.ToLower().Contains(query) ||
+                r.Description.ToLower().Contains(query) ||
+                r.IngredientGroups.Any(ig => 
+                    ig.Ingredients.Any(i => i.Name.ToLower().Contains(query))
+                )
+            )
+        )
+        .ToListAsync();
+
+        var responseDto = _mapper.Map<List<RecipeResponseDto>>(recipes);
         return ServiceResponseHelper.CreateSuccessResponse(responseDto);
     }
 }

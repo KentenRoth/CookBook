@@ -141,4 +141,14 @@ public class RecipeController : ControllerBase
         return Ok(recipe);
     }
 
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchRecipes([FromQuery] string query)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var recipes = await _recipeService.SearchRecipes(query, userId);
+
+        return Ok(recipes);
+    }
+
 }
