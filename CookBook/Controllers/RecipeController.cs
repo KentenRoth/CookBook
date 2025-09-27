@@ -150,5 +150,14 @@ public class RecipeController : ControllerBase
 
         return Ok(recipes);
     }
-
+    [HttpGet("filter")]
+    public async Task<IActionResult> FilterRecipesByTags([FromQuery] string tags)
+    {
+        var filterTags = tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                         .Select(t => t.Trim())
+                         .ToList();
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var recipes = await _recipeService.FilterRecipesByTags(filterTags, currentUserId);
+        return Ok(recipes);
+    }
 }

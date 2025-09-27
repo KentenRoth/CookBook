@@ -15,4 +15,5 @@ public interface IRecipeService
     Task<ServiceResponseDto<List<RecipeTagResponseDto>>> GetAllTags();
     Task<ServiceResponseDto<RecipeResponseDto>> UpdateRecipe(int recipeId, UpdateRecipeRequestDto dto, string userId);
     Task<ServiceResponseDto<List<RecipeResponseDto>>> SearchRecipes(string query, string? currentUserId = null);
+    Task<ServiceResponseDto<List<RecipeResponseDto>>> FilterRecipesByTags(List<string> tags, string? currentUserId = null);
 }
