@@ -1,0 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using CookBook.Data;
+using CookBook.DTOs;
+using CookBook.Helpers;
+using CookBook.Interfaces;
+using CookBook.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace CookBook.Services;
+public class FavoriteService : IFavoriteService
+{
+    private readonly ApplicationDBContext _context;
+    private readonly UserManager<AppUser> _userManager;
+    private readonly IMapper _mapper;
+
+    public FavoriteService(ApplicationDBContext context, UserManager<AppUser> userManager, IMapper mapper)
+    {
+        _context = context;
+        _userManager = userManager;
+        _mapper = mapper;
+    }
+    
+    public async Task<ServiceResponseDto<bool>> AddToFavorites(int recipeId, string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<bool>("User not found");
+        }
+
+        var recipe = await _context.Recipes.FindAsync(recipeId);
+        if (recipe == null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<bool>("Recipe not found");
+        }
+
+        var existingFavorite = await _context.FavoriteRecipes
+            .FirstOrDefaultAsync(f => f.UserId == userId && f.RecipeId == recipeId);
+        if (existingFavorite != null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<bool>("Recipe already in favorites");
+        }
+
+        var favorite = new FavoriteRecipe
+        {
+            UserId = userId,
+            RecipeId = recipeId,
+        };
+
+        _context.FavoriteRecipes.Add(favorite);
+        await _context.SaveChangesAsync();
+
+        return ServiceResponseHelper.CreateSuccessResponse(true);
+    }
+}

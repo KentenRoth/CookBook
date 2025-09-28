@@ -53,6 +53,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRecipeService, RecipeService>();
+builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterAccountRequestDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserRequestDtoValidator>();
