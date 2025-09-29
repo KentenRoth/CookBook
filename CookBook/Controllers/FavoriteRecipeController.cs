@@ -7,6 +7,7 @@ using CookBook.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CookBook.Controllers;
+
 [ApiController]
 [Route("api/favorite")]
 public class FavoriteRecipeController : ControllerBase
@@ -23,6 +24,18 @@ public class FavoriteRecipeController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var response = await _favoriteService.AddToFavorites(recipeId, userId);
+        if (!response.Success)
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
+    }
+
+    [HttpGet("user")]
+    public async Task<IActionResult> GetUserFavorites()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var response = await _favoriteService.GetFavoriteRecipes(userId);
         if (!response.Success)
         {
             return BadRequest(response);
