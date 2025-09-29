@@ -59,7 +59,7 @@ public class FavoriteService : IFavoriteService
 
         return ServiceResponseHelper.CreateSuccessResponse(true);
     }
-    
+
     public async Task<ServiceResponseDto<List<RecipeResponseDto>>> GetFavoriteRecipes(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -82,5 +82,26 @@ public class FavoriteService : IFavoriteService
         var recipeDtos = favoriteRecipes.Select(f => _mapper.Map<RecipeResponseDto>(f.Recipe)).ToList();
 
         return ServiceResponseHelper.CreateSuccessResponse(recipeDtos);
+    }
+    
+    public async Task<ServiceResponseDto<bool>> RemoveFromFavorites(int recipeId, string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<bool>("User not found");
+        }
+
+        var favorite = await _context.FavoriteRecipes
+            .FirstOrDefaultAsync(f => f.UserId == userId && f.RecipeId == recipeId);
+        if (favorite == null)
+        {
+            return ServiceResponseHelper.CreateErrorResponse<bool>("Recipe not in favorites");
+        }
+
+        _context.FavoriteRecipes.Remove(favorite);
+        await _context.SaveChangesAsync();
+
+        return ServiceResponseHelper.CreateSuccessResponse(true);
     }
 }

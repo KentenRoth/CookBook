@@ -42,4 +42,16 @@ public class FavoriteRecipeController : ControllerBase
         }
         return Ok(response);
     }
+
+    [HttpDelete("{recipeId}")]
+    public async Task<IActionResult> RemoveFromFavorites(int recipeId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var response = await _favoriteService.RemoveFromFavorites(recipeId, userId);
+        if (!response.Success)
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
+    }
 }

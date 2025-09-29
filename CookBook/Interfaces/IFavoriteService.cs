@@ -11,5 +11,6 @@ namespace CookBook.Interfaces
     {
         Task<ServiceResponseDto<bool>> AddToFavorites(int recipeId, string userId);
         Task<ServiceResponseDto<List<RecipeResponseDto>>> GetFavoriteRecipes(string userId);
+        Task<ServiceResponseDto<bool>> RemoveFromFavorites(int recipeId, string userId);
     }
 }
