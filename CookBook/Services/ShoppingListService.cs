@@ -11,6 +11,7 @@ using CookBook.Helpers;
 using CookBook.Interfaces;
 using CookBook.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CookBook.Services
 {
@@ -40,6 +41,21 @@ namespace CookBook.Services
 
             _context.ShoppingLists.Add(shoppingList);
             await _context.SaveChangesAsync();
+
+            var responseDto = _mapper.Map<ShoppingListResponseDto>(shoppingList);
+            return ServiceResponseHelper.CreateSuccessResponse(responseDto);
+        }
+
+        public async Task<ServiceResponseDto<ShoppingListResponseDto>> GetShoppingListById(int id, string userId)
+        {
+            var shoppingList = await _context.ShoppingLists
+                .Where(sl => sl.Id == id && sl.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (shoppingList == null)
+            {
+                return ServiceResponseHelper.CreateErrorResponse<ShoppingListResponseDto>("Shopping list not found.");
+            }
 
             var responseDto = _mapper.Map<ShoppingListResponseDto>(shoppingList);
             return ServiceResponseHelper.CreateSuccessResponse(responseDto);
