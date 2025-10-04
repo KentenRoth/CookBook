@@ -35,6 +35,21 @@ namespace CookBook.Controllers
             return Ok(shoppingList);
         }
 
+        [HttpGet("lists")]
+        public async Task<IActionResult> GetAllShoppingLists()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var shoppingLists = await _shoppingListService.GetAllShoppingLists(userId);
+
+            return Ok(shoppingLists);
+        }
+
         [HttpGet("lists/{id}")]
         public async Task<IActionResult> GetShoppingListById(int id)
         {

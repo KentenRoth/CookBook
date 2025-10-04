@@ -60,5 +60,16 @@ namespace CookBook.Services
             var responseDto = _mapper.Map<ShoppingListResponseDto>(shoppingList);
             return ServiceResponseHelper.CreateSuccessResponse(responseDto);
         }
+
+        public async Task<ServiceResponseDto<List<ShoppingListResponseDto>>> GetAllShoppingLists(string userId)
+        {
+            var shoppingLists = await _context.ShoppingLists
+                .Where(sl => sl.UserId == userId)
+                .ToListAsync();
+
+            var responseDtos = _mapper.Map<List<ShoppingListResponseDto>>(shoppingLists);
+
+            return ServiceResponseHelper.CreateSuccessResponse(responseDtos);
+        }
     }
 }
