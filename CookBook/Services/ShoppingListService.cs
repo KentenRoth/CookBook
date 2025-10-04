@@ -71,5 +71,22 @@ namespace CookBook.Services
 
             return ServiceResponseHelper.CreateSuccessResponse(responseDtos);
         }
+
+        public async Task<ServiceResponseDto<bool>> DeleteShoppingList(int id, string userId)
+        {
+            var shoppingList = await _context.ShoppingLists
+                .Where(sl => sl.Id == id && sl.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (shoppingList == null)
+            {
+                return ServiceResponseHelper.CreateErrorResponse<bool>("Shopping list not found.");
+            }
+
+            _context.ShoppingLists.Remove(shoppingList);
+            await _context.SaveChangesAsync();
+
+            return ServiceResponseHelper.CreateSuccessResponse(true);
+        }   
     }
 }
