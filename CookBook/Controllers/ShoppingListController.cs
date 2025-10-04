@@ -80,7 +80,7 @@ namespace CookBook.Controllers
                 return Unauthorized();
             }
 
-            var response= await _shoppingListService.DeleteShoppingList(id, userId);
+            var response = await _shoppingListService.DeleteShoppingList(id, userId);
 
             if (!response.Success)
             {
@@ -88,6 +88,26 @@ namespace CookBook.Controllers
             }
 
             return Ok(response);
+        }
+
+        [HttpPut("lists/{id}")]
+        public async Task<IActionResult> UpdateShoppingList(int id, UpdateShoppingListDto dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var shoppingList = await _shoppingListService.UpdateShoppingList(id, dto, userId);
+
+            if (!shoppingList.Success)
+            {
+                return NotFound(shoppingList);
+            }
+
+            return Ok(shoppingList);
         }
     }
 }

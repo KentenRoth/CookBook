@@ -88,5 +88,33 @@ namespace CookBook.Services
 
             return ServiceResponseHelper.CreateSuccessResponse(true);
         }   
+
+        public async Task<ServiceResponseDto<ShoppingListResponseDto>> UpdateShoppingList(int id, UpdateShoppingListDto dto, string userId)
+        {
+            var shoppingList = await _context.ShoppingLists
+                .Where(sl => sl.Id == id && sl.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (shoppingList == null)
+            {
+                return ServiceResponseHelper.CreateErrorResponse<ShoppingListResponseDto>("Shopping list not found.");
+            }
+
+            if (dto.Name != null)
+            {
+                shoppingList.Name = dto.Name;
+            }
+
+            if (dto.IsCompleted.HasValue)
+            {
+                shoppingList.IsCompleted = dto.IsCompleted.Value;
+                shoppingList.CompletedOn = dto.IsCompleted.Value ? DateTime.UtcNow : (DateTime?)null;
+            }
+
+            await _context.SaveChangesAsync();
+
+            var responseDto = _mapper.Map<ShoppingListResponseDto>(shoppingList);
+            return ServiceResponseHelper.CreateSuccessResponse(responseDto);
+        }
     }
 }
