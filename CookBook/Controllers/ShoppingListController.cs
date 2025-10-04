@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using CookBook.DTOs.ShoppingList.Request;
 using CookBook.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +18,21 @@ namespace CookBook.Controllers
         public ShoppingListController(IShoppingListService shoppingListService)
         {
             _shoppingListService = shoppingListService;
+        }
+
+        [HttpPost("lists")]
+        public async Task<IActionResult> CreateShoppingList(CreateShoppingListDto dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var shoppingList = await _shoppingListService.CreateShoppingList(dto, userId);
+
+            return Ok(shoppingList);
         }
     }
 }
