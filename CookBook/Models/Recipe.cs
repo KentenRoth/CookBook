@@ -27,6 +27,7 @@ public class Recipe
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
     public AppUser User { get; set; }
     public ICollection<FavoriteRecipe> FavoritedBy { get; set; } = new List<FavoriteRecipe>();
+    public ICollection<RecipeImage> Images { get; set; } = new List<RecipeImage>();
     
 
 }

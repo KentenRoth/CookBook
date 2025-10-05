@@ -86,6 +86,12 @@ public class ApplicationDBContext : IdentityDbContext<AppUser>
             .HasForeignKey(sli => sli.ShoppingListId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<RecipeImage>()
+            .HasOne(ri => ri.Recipe)
+            .WithMany(r => r.Images)
+            .HasForeignKey(ri => ri.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Entity<Recipe>()
             .HasMany(r => r.Tags)
             .WithMany(t => t.Recipes)
