@@ -109,5 +109,26 @@ namespace CookBook.Controllers
 
             return Ok(shoppingList);
         }
+
+        [HttpPost("lists/{shoppingListId}/items")]
+        public async Task<IActionResult> AddItemToShoppingList(int shoppingListId, CreateShoppingListItemDto dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var response = await _shoppingListService.AddItemToShoppingList(shoppingListId, dto, userId);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
     }
 }

@@ -87,7 +87,7 @@ namespace CookBook.Services
             await _context.SaveChangesAsync();
 
             return ServiceResponseHelper.CreateSuccessResponse(true);
-        }   
+        }
 
         public async Task<ServiceResponseDto<ShoppingListResponseDto>> UpdateShoppingList(int id, UpdateShoppingListDto dto, string userId)
         {
@@ -116,5 +116,33 @@ namespace CookBook.Services
             var responseDto = _mapper.Map<ShoppingListResponseDto>(shoppingList);
             return ServiceResponseHelper.CreateSuccessResponse(responseDto);
         }
+        
+        public async Task<ServiceResponseDto<ShoppingListItemResponseDto>> AddItemToShoppingList(int shoppingListId, CreateShoppingListItemDto dto, string userId)
+        {
+            var shoppingList = await _context.ShoppingLists
+                .Where(sl => sl.Id == shoppingListId && sl.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (shoppingList == null)
+            {
+                return ServiceResponseHelper.CreateErrorResponse<ShoppingListItemResponseDto>("Shopping list not found.");
+            }
+
+            var shoppingListItem = new ShoppingListItem
+            {
+                Name = dto.Name,
+                Quantity = dto.Quantity,
+                Unit = dto.Unit,
+                IsPurchased = false,
+                ShoppingListId = shoppingListId
+            };
+
+            _context.ShoppingListItems.Add(shoppingListItem);
+            await _context.SaveChangesAsync();
+
+            var responseDto = _mapper.Map<ShoppingListItemResponseDto>(shoppingListItem);
+            return ServiceResponseHelper.CreateSuccessResponse(responseDto);
+        }
     }
+
 }
