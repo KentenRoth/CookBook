@@ -50,6 +50,7 @@ namespace CookBook.Services
         {
             var shoppingList = await _context.ShoppingLists
                 .Where(sl => sl.Id == id && sl.UserId == userId)
+                .Include(sl => sl.Items)
                 .FirstOrDefaultAsync();
 
             if (shoppingList == null)
@@ -64,10 +65,12 @@ namespace CookBook.Services
         public async Task<ServiceResponseDto<List<ShoppingListResponseDto>>> GetAllShoppingLists(string userId)
         {
             var shoppingLists = await _context.ShoppingLists
-                .Where(sl => sl.UserId == userId)
-                .ToListAsync();
+                    .Where(sl => sl.UserId == userId)
+                    .Include(sl => sl.Items)
+                    .ToListAsync();
 
             var responseDtos = _mapper.Map<List<ShoppingListResponseDto>>(shoppingLists);
+            
 
             return ServiceResponseHelper.CreateSuccessResponse(responseDtos);
         }
@@ -116,7 +119,7 @@ namespace CookBook.Services
             var responseDto = _mapper.Map<ShoppingListResponseDto>(shoppingList);
             return ServiceResponseHelper.CreateSuccessResponse(responseDto);
         }
-        
+
         public async Task<ServiceResponseDto<ShoppingListItemResponseDto>> AddItemToShoppingList(int shoppingListId, CreateShoppingListItemDto dto, string userId)
         {
             var shoppingList = await _context.ShoppingLists
@@ -143,6 +146,6 @@ namespace CookBook.Services
             var responseDto = _mapper.Map<ShoppingListItemResponseDto>(shoppingListItem);
             return ServiceResponseHelper.CreateSuccessResponse(responseDto);
         }
+        
     }
-
 }

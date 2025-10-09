@@ -1,8 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
+using CookBook.DTOs.ShoppingList.Response;
+
+using CookBook.Models;
 
 namespace CookBook.Mappers
 {
@@ -10,8 +9,10 @@ namespace CookBook.Mappers
     {
         public ShoppingListProfile()
         {
-            CreateMap<Models.ShoppingList, DTOs.ShoppingList.Response.ShoppingListResponseDto>();
-            CreateMap<Models.ShoppingListItem, DTOs.ShoppingList.Response.ShoppingListItemResponseDto>();
+            CreateMap<ShoppingList, ShoppingListResponseDto>()
+            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+
+        CreateMap<ShoppingListItem, ShoppingListItemResponseDto>();
         }
     }
 }
