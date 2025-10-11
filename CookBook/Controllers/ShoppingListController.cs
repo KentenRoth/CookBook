@@ -130,5 +130,24 @@ namespace CookBook.Controllers
             return Ok(response);
         }
 
+        [HttpDelete("items/{itemId}")]
+        public async Task<IActionResult> RemoveItemFromShoppingList(int itemId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var response = await _shoppingListService.RemoveItemFromShoppingList(itemId, userId);
+
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
     }
 }

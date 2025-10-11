@@ -70,7 +70,7 @@ namespace CookBook.Services
                     .ToListAsync();
 
             var responseDtos = _mapper.Map<List<ShoppingListResponseDto>>(shoppingLists);
-            
+
 
             return ServiceResponseHelper.CreateSuccessResponse(responseDtos);
         }
@@ -147,5 +147,22 @@ namespace CookBook.Services
             return ServiceResponseHelper.CreateSuccessResponse(responseDto);
         }
         
+        public async Task<ServiceResponseDto<bool>> RemoveItemFromShoppingList(int itemId, string userId)
+        {
+            var shoppingListItem = await _context.ShoppingListItems
+                .Include(sli => sli.ShoppingList)
+                .Where(sli => sli.Id == itemId && sli.ShoppingList.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (shoppingListItem == null)
+            {
+                return ServiceResponseHelper.CreateErrorResponse<bool>("Shopping list item not found.");
+            }
+
+            _context.ShoppingListItems.Remove(shoppingListItem);
+            await _context.SaveChangesAsync();
+
+            return ServiceResponseHelper.CreateSuccessResponse(true);
+        }
     }
 }

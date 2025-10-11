@@ -16,5 +16,6 @@ namespace CookBook.Interfaces
         Task<ServiceResponseDto<bool>> DeleteShoppingList(int id, string userId);
         Task<ServiceResponseDto<ShoppingListResponseDto>> UpdateShoppingList(int id, UpdateShoppingListDto dto, string userId);
         Task<ServiceResponseDto<ShoppingListItemResponseDto>> AddItemToShoppingList(int shoppingListId, CreateShoppingListItemDto dto, string userId);
+        Task<ServiceResponseDto<bool>> RemoveItemFromShoppingList(int itemId, string userId);
     }
 }
