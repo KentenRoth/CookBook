@@ -146,7 +146,7 @@ namespace CookBook.Services
             var responseDto = _mapper.Map<ShoppingListItemResponseDto>(shoppingListItem);
             return ServiceResponseHelper.CreateSuccessResponse(responseDto);
         }
-        
+
         public async Task<ServiceResponseDto<bool>> RemoveItemFromShoppingList(int itemId, string userId)
         {
             var shoppingListItem = await _context.ShoppingListItems
@@ -163,6 +163,44 @@ namespace CookBook.Services
             await _context.SaveChangesAsync();
 
             return ServiceResponseHelper.CreateSuccessResponse(true);
+        }
+        
+        public async Task<ServiceResponseDto<ShoppingListItemResponseDto>> UpdateShoppingListItem(int itemId, UpdateShoppingListItemDto dto, string userId)
+        {
+            var shoppingListItem = await _context.ShoppingListItems
+                .Include(sli => sli.ShoppingList)
+                .Where(sli => sli.Id == itemId && sli.ShoppingList.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (shoppingListItem == null)
+            {
+                return ServiceResponseHelper.CreateErrorResponse<ShoppingListItemResponseDto>("Shopping list item not found.");
+            }
+
+            if (dto.Name != null)
+            {
+                shoppingListItem.Name = dto.Name;
+            }
+
+            if (dto.Quantity.HasValue)
+            {
+                shoppingListItem.Quantity = dto.Quantity.Value;
+            }
+
+            if (dto.Unit != null)
+            {
+                shoppingListItem.Unit = dto.Unit;
+            }
+
+            if (dto.IsPurchased.HasValue)
+            {
+                shoppingListItem.IsPurchased = dto.IsPurchased.Value;
+            }
+
+            await _context.SaveChangesAsync();
+
+            var responseDto = _mapper.Map<ShoppingListItemResponseDto>(shoppingListItem);
+            return ServiceResponseHelper.CreateSuccessResponse(responseDto);
         }
     }
 }

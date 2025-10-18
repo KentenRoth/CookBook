@@ -149,5 +149,25 @@ namespace CookBook.Controllers
 
             return Ok(response);
         }
+
+        [HttpPut("items/{itemId}")]
+        public async Task<IActionResult> UpdateShoppingListItem(int itemId, UpdateShoppingListItemDto dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var response = await _shoppingListService.UpdateShoppingListItem(itemId, dto, userId);
+
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
     }
 }
