@@ -2,6 +2,7 @@ using System.Text;
 using CookBook.Data;
 using CookBook.Interfaces;
 using CookBook.Models;
+using CookBook.Properties;
 using CookBook.Services;
 using CookBook.Validators.Account;
 using FluentValidation;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Minio;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +47,17 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]!))
     };
+});
+
+var minioConfig = builder.Configuration.GetSection("Minio");
+builder.Services.AddSingleton<IMinioClient>(sp =>
+{
+    var config = minioConfig.Get<MinioSettings>();
+    return new MinioClient()
+        .WithEndpoint(config.Endpoint)
+        .WithCredentials(config.AccessKey, config.SecretKey)
+        .WithSSL(config.WithSSL)
+        .Build();
 });
 
 builder.Services.AddAutoMapper(typeof(Program));
