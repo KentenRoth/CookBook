@@ -22,10 +22,10 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
       - "9000:9000"
-      - "9090:9090"
+      - "9091:9091"
     volumes:
       - minio_data:/data
-    command: server /data --console-address ":9090"
+    command: server /data --console-address ":9091"
 
 volumes:
   sqlserver_data:
