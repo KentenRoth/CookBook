@@ -9,7 +9,7 @@ public class UserSettings
     [MaxLength(450)]
     public string UserId { get; set; } = string.Empty;
 
-    public string PrrofileImageUrl { get; set; } = string.Empty;
+    public string ProfileImageUrl { get; set; } = string.Empty;
     
     [MaxLength(10)]
     public required string ColorMode { get; set; } = "light";

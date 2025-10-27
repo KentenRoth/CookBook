@@ -405,7 +405,7 @@ namespace CookBook.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<string>("PrrofileImageUrl")
+                    b.Property<string>("ProfileImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

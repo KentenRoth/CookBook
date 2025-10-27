@@ -49,14 +49,14 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-var minioConfig = builder.Configuration.GetSection("Minio");
+var minioConfig = builder.Configuration.GetSection("Minio").Get<MinioSettings>();
+
 builder.Services.AddSingleton<IMinioClient>(sp =>
 {
-    var config = minioConfig.Get<MinioSettings>();
     return new MinioClient()
-        .WithEndpoint(config.Endpoint)
-        .WithCredentials(config.AccessKey, config.SecretKey)
-        .WithSSL(config.WithSSL)
+        .WithEndpoint(minioConfig.Endpoint)
+        .WithCredentials(minioConfig.AccessKey, minioConfig.SecretKey)
+        .WithSSL(minioConfig.WithSSL)
         .Build();
 });
 
@@ -68,6 +68,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRecipeService, RecipeService>();
 builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 builder.Services.AddScoped<IShoppingListService, ShoppingListService>();
+builder.Services.AddScoped<IFileUploadService, FileUploads>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterAccountRequestDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserRequestDtoValidator>();
