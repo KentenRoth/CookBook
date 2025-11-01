@@ -11,7 +11,7 @@ namespace CookBook.Controllers;
 
 [ApiController]
 [Route("api/files")]
-    
+
 public class FileUploadController : ControllerBase
 {
     private readonly IFileUploadService _fileUploadService;
@@ -31,5 +31,16 @@ public class FileUploadController : ControllerBase
             return BadRequest("Error uploading profile picture.");
 
         return Ok(new { ImageUrl = result });
+    }
+    [HttpDelete("profile-picture")]
+    public async Task<IActionResult> DeleteProfilePicture()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var result = await _fileUploadService.DeleteProfilePictureAsync(userId);
+
+        if (!result)
+            return BadRequest("Error deleting profile picture.");
+
+        return Ok("Profile picture deleted successfully.");
     }
 }

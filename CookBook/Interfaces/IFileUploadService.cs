@@ -9,5 +9,6 @@ namespace CookBook.Interfaces
     public interface IFileUploadService
     {
         public Task<string> UploadProfilePictureAsync(ProfilePictureUploadDto dto, string userId);
+        public Task<bool> DeleteProfilePictureAsync(string userId);
     }
 }

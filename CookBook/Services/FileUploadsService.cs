@@ -48,8 +48,8 @@ namespace CookBook.Services
 
             var fileUrl = $"http://{_minioSettings.Endpoint}/{bucketName}/{fileName}";
 
-        var userSettings = await _context.UserSettings
-            .FirstOrDefaultAsync(us => us.UserId == userId);
+            var userSettings = await _context.UserSettings
+                .FirstOrDefaultAsync(us => us.UserId == userId);
 
             if (userSettings != null)
             {
@@ -59,5 +59,27 @@ namespace CookBook.Services
 
             return fileUrl;
         }
+        
+        public async Task<bool> DeleteProfilePictureAsync(string userId)
+        {
+            var userSettings = await _context.UserSettings
+                .FirstOrDefaultAsync(us => us.UserId == userId);
+
+            if (userSettings == null || string.IsNullOrEmpty(userSettings.ProfileImageUrl))
+                return false;
+
+            var fileUrl = userSettings.ProfileImageUrl;
+            var bucketName = "profile-pictures";
+            var fileName = fileUrl.Split('/').Last();
+
+            await _minioClient.RemoveObjectAsync(new RemoveObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(fileName));
+
+            userSettings.ProfileImageUrl = "";
+            await _context.SaveChangesAsync();
+
+            return true;
+        }   
     }
 }
