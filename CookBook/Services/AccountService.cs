@@ -182,7 +182,8 @@ public class AccountService : IAccountService
             CreatedAt = user.CreatedAt,
             UserSettings = new UserSettingsResponseDto
             {
-                ColorMode = userSettings.ColorMode
+                ColorMode = userSettings.ColorMode,
+                ProfileImageUrl = userSettings.ProfileImageUrl
             }
         };
         
