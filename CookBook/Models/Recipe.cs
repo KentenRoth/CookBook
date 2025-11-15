@@ -18,6 +18,8 @@ public class Recipe
     public string About { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
     public bool IsPublic { get; set; } = true;
+    public string RecipeImageUrl { get; set; } = string.Empty;
+
 
     [MaxLength(450)]
     public string UserId { get; set; }
